@@ -1,6 +1,6 @@
 {
   "name": "cli-chan",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A kawaii copilot for your CLI",
   "main": "index.js",
   "repository": "https://github.com/LightYagami200/cli-chan",

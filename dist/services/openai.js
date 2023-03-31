@@ -44,7 +44,7 @@ class OpenAI {
                 ...context,
                 {
                     role: 'user',
-                    content: `Given below prompt, output a one-line reply only containing the requested command, Don't include any other text or markdown:\n${prompt}${command ? '\n\nCommand here:' : ''}`,
+                    content: `${command ? "Given below prompt, output a one-line reply only containing the requested command, Don't include any other text or markdown:\n" : ''}${prompt}${command ? '\n\nCommand here:' : ''}`,
                 }];
             try {
                 const { data } = yield this.instance.createChatCompletion({
