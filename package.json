@@ -1,0 +1,27 @@
+{
+  "name": "cli-chan",
+  "version": "1.0.0",
+  "description": "A kawaii copilot for your CLI",
+  "main": "index.js",
+  "repository": "https://github.com/LightYagami200/cli-chan",
+  "author": "Light Yagami <its_lightyagami@icloud.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "bin": {
+    "cc": "./dist/index.js"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.5.0",
+    "@types/node": "^18.15.11",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.0.5",
+    "typescript": "^5.0.3"
+  },
+  "dependencies": {
+    "commander": "^10.0.0",
+    "openai": "^3.2.1"
+  }
+}
