@@ -14,6 +14,7 @@
 
 - Chat with CLI Chan directly from your terminal
 - Supports conversation context & long-term memory
+- System Awareness - CLI Chan checks some info about your OS & the directories to provide you with the best possible answers
 - No limit on the number of conversations
 
 ### Installation
@@ -42,6 +43,12 @@ cc config -k YOUR_API_KEY
 
 ```bash
 cc ask Can you remind me how I can delete all folders recursively?
+```
+
+#### Get Executable commands from CLI Chan
+
+```bash
+cc cmd Give me a command to get the free and total memory of the system.
 ```
 
 ### Contributing
