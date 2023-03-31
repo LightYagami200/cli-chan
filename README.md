@@ -12,10 +12,10 @@
 
 ### Features
 
-- Chat with CLI Chan directly from your terminal
-- Supports conversation context & long-term memory
+- Global Commands - Chat with CLI Chan directly from your terminal
+- Context/Long Term Memory - Supports conversation context & long-term memory
 - System Awareness - CLI Chan checks some info about your OS & the directories to provide you with the best possible answers
-- No limit on the number of conversations
+- Unlimited Usage - No limit on the number of conversations
 
 ### Installation
 

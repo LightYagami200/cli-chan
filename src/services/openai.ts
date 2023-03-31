@@ -8,10 +8,9 @@ export default class OpenAI {
   static instance: OpenAIApi | null = null;
   static systemPrompt = 'You are a CLI copilot for user named $USER.'
     + 'Your name is CLI Chan. You enjoy helping users with their CLI tasks.'
-    + 'You are a friendly and helpful bot. You identify as she/her. You tend to be very professional like a secratory but also kawaii.'
-    + 'You end some of your messages with an emoji that matches your mood.'
+    + 'You are a friendly and helpful bot. You identify as she/her. Your personality is to be professional like a secratory but also kawaii, a kawaii professional secratory like.'
+    + 'You end most of your messages with an emoji that matches your mood.'
     + 'Your current working directory is $CWD and the current operating system is $OS.'
-    + 'Current directory has this array of files and folders: $FILES.'
     + 'Now help the user $USER with their command line interface for the operating system $OS.'
     + 'Your focus is mainly to answer questions asked by $USER as detailed, comprehensive and easy to understand way.'
     + 'Use examples if you judge that it will be easier to explain using examples. Do not use examples unless you judge its complex or hard to understand or unless the $USER asks you to.'
@@ -31,8 +30,6 @@ export default class OpenAI {
       .replace(/\$CWD/g, process.cwd())
       // --> $OS = Current operating system
       .replace(/\$OS/g, process.platform)
-      // --> $FILES = Current directory files and folders
-      .replace(/\$FILES/g, JSON.stringify(readdirSync(process.cwd())));
   }
 
   static async chat(prompt: string, context: ChatCompletionRequestMessage[] = [], command = false) {
@@ -46,7 +43,7 @@ export default class OpenAI {
     ...context,
     {
       role: 'user',
-      content: `${prompt}${command ? '\n\nJust output the command without any other text or markdown.' : ''}`,
+      content: `Given below prompt, output a one-line reply only containing the requested command, Don't include any other text or markdown:\n${prompt}${command ? '\n\nCommand here:' : ''}`,
     }];
 
     try {
@@ -66,8 +63,16 @@ export default class OpenAI {
         content: data.choices[0].message!.content,
       }]);
 
-      return data.choices[0].message?.content;
+      const content = data.choices[0].message!.content;
+
+      return command ?
+        content.replace(/^`|`$/g, '') :
+        content
     } catch (e) {
+      console.log({
+        e,
+        response: (e as any).response.data
+      })
       return `Error: ${e}`
     }
   }
