@@ -13,7 +13,7 @@ const program = new Command();
 program
   .name('cli-chan')
   .description("A kawaii copilot for your CLI")
-  .version("1.0.0")
+  .version("1.0.1")
 
 // Commands
 
@@ -58,6 +58,26 @@ program.command('ask <question...>')
     await OpenAI.init(Config.config.openaiSecretKey);
 
     const answer = await OpenAI.chat(question.join(' '), Context.context);
+
+    console.log(answer);
+  });
+
+// -> Command
+program.command('command <question...>')
+  .aliases(['cmd'])
+  .description('Ask CLI Chan to generate a command')
+  .allowUnknownOption()
+  .action(async (question) => {
+    await Config.loadConfig();
+
+    if (!Config.config?.openaiSecretKey)
+      return console.log('Error: OpenAI API key not set\nPlease run `cc config -k <key>` to set the OpenAI API key');
+
+    await Context.loadContext();
+
+    await OpenAI.init(Config.config.openaiSecretKey);
+
+    const answer = await OpenAI.chat(question.join(' '), Context.context, true);
 
     console.log(answer);
   });

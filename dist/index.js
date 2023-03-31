@@ -24,7 +24,7 @@ const program = new commander_1.Command();
 program
     .name('cli-chan')
     .description("A kawaii copilot for your CLI")
-    .version("1.0.0");
+    .version("1.0.1");
 // Commands
 // -> Config
 program.command('config')
@@ -59,6 +59,21 @@ program.command('ask <question...>')
     yield context_1.default.loadContext();
     yield openai_1.default.init(config_1.default.config.openaiSecretKey);
     const answer = yield openai_1.default.chat(question.join(' '), context_1.default.context);
+    console.log(answer);
+}));
+// -> Command
+program.command('command <question...>')
+    .aliases(['cmd'])
+    .description('Ask CLI Chan to generate a command')
+    .allowUnknownOption()
+    .action((question) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
+    yield config_1.default.loadConfig();
+    if (!((_b = config_1.default.config) === null || _b === void 0 ? void 0 : _b.openaiSecretKey))
+        return console.log('Error: OpenAI API key not set\nPlease run `cc config -k <key>` to set the OpenAI API key');
+    yield context_1.default.loadContext();
+    yield openai_1.default.init(config_1.default.config.openaiSecretKey);
+    const answer = yield openai_1.default.chat(question.join(' '), context_1.default.context, true);
     console.log(answer);
 }));
 program.parse();

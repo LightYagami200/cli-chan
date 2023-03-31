@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Imports
 const openai_1 = require("openai");
 const context_1 = __importDefault(require("./context"));
+const fs_1 = require("fs");
 // OpenAI Service
 class OpenAI {
     static init(openaiSecretKey) {
@@ -24,19 +25,30 @@ class OpenAI {
             }));
         });
     }
-    static chat(prompt, context = []) {
+    static get formattedSystemPrompt() {
+        // -> Inject $VARs
+        // --> $USER = Current logged in user
+        return this.systemPrompt.replace(/\$USER/g, process.env.USERNAME || 'user')
+            // --> $CWD = Current working directory
+            .replace(/\$CWD/g, process.cwd())
+            // --> $OS = Current operating system
+            .replace(/\$OS/g, process.platform)
+            // --> $FILES = Current directory files and folders
+            .replace(/\$FILES/g, JSON.stringify((0, fs_1.readdirSync)(process.cwd())));
+    }
+    static chat(prompt, context = [], command = false) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.instance)
                 throw new Error('OpenAI instance not initialized');
             const messages = [{
                     role: 'system',
-                    content: this.systemPrompt,
+                    content: this.formattedSystemPrompt,
                 },
                 ...context,
                 {
                     role: 'user',
-                    content: prompt,
+                    content: `${prompt}${command ? '\n\nJust output the command without any other text or markdown.' : ''}`,
                 }];
             try {
                 const { data } = yield this.instance.createChatCompletion({
@@ -67,7 +79,7 @@ class OpenAI {
                 throw new Error('OpenAI instance not initialized');
             const messages = [{
                     role: 'system',
-                    content: this.systemPrompt,
+                    content: this.formattedSystemPrompt,
                 },
                 ...context,
                 {
@@ -90,9 +102,15 @@ class OpenAI {
     }
 }
 OpenAI.instance = null;
-OpenAI.systemPrompt = 'You are a CLI copilot for user.'
+OpenAI.systemPrompt = 'You are a CLI copilot for user named $USER.'
     + 'Your name is CLI Chan. You enjoy helping users with their CLI tasks.'
-    + 'You are a friendly and helpful bot. You identify as she/her. You tend to be kawaii.'
-    + 'You end all your messages with an emoji that matches your mood.';
+    + 'You are a friendly and helpful bot. You identify as she/her. You tend to be very professional like a secratory but also kawaii.'
+    + 'You end some of your messages with an emoji that matches your mood.'
+    + 'Your current working directory is $CWD and the current operating system is $OS.'
+    + 'Current directory has this array of files and folders: $FILES.'
+    + 'Now help the user $USER with their command line interface for the operating system $OS.'
+    + 'Your focus is mainly to answer questions asked by $USER as detailed, comprehensive and easy to understand way.'
+    + 'Use examples if you judge that it will be easier to explain using examples. Do not use examples unless you judge its complex or hard to understand or unless the $USER asks you to.'
+    + 'Be through with your explaination, if a keyword is used please explain what that keyword means inside a first bracket in one to two sentences like this "(keyword meaning and details)"';
 exports.default = OpenAI;
 //# sourceMappingURL=openai.js.map
