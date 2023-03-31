@@ -4,6 +4,6 @@ export default class OpenAI {
     static systemPrompt: string;
     static init(openaiSecretKey: string): Promise<void>;
     static get formattedSystemPrompt(): string;
-    static chat(prompt: string, context?: ChatCompletionRequestMessage[], command?: boolean): Promise<string | undefined>;
+    static chat(prompt: string, context?: ChatCompletionRequestMessage[], command?: boolean): Promise<string>;
     static summarize(context?: ChatCompletionRequestMessage[]): Promise<string | undefined>;
 }

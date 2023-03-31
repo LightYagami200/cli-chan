@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Imports
 const openai_1 = require("openai");
 const context_1 = __importDefault(require("./context"));
-const fs_1 = require("fs");
 // OpenAI Service
 class OpenAI {
     static init(openaiSecretKey) {
@@ -32,12 +31,9 @@ class OpenAI {
             // --> $CWD = Current working directory
             .replace(/\$CWD/g, process.cwd())
             // --> $OS = Current operating system
-            .replace(/\$OS/g, process.platform)
-            // --> $FILES = Current directory files and folders
-            .replace(/\$FILES/g, JSON.stringify((0, fs_1.readdirSync)(process.cwd())));
+            .replace(/\$OS/g, process.platform);
     }
     static chat(prompt, context = [], command = false) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.instance)
                 throw new Error('OpenAI instance not initialized');
@@ -48,7 +44,7 @@ class OpenAI {
                 ...context,
                 {
                     role: 'user',
-                    content: `${prompt}${command ? '\n\nJust output the command without any other text or markdown.' : ''}`,
+                    content: `Given below prompt, output a one-line reply only containing the requested command, Don't include any other text or markdown:\n${prompt}${command ? '\n\nCommand here:' : ''}`,
                 }];
             try {
                 const { data } = yield this.instance.createChatCompletion({
@@ -65,9 +61,16 @@ class OpenAI {
                         role: 'assistant',
                         content: data.choices[0].message.content,
                     }]);
-                return (_a = data.choices[0].message) === null || _a === void 0 ? void 0 : _a.content;
+                const content = data.choices[0].message.content;
+                return command ?
+                    content.replace(/^`|`$/g, '') :
+                    content;
             }
             catch (e) {
+                console.log({
+                    e,
+                    response: e.response.data
+                });
                 return `Error: ${e}`;
             }
         });
@@ -104,10 +107,9 @@ class OpenAI {
 OpenAI.instance = null;
 OpenAI.systemPrompt = 'You are a CLI copilot for user named $USER.'
     + 'Your name is CLI Chan. You enjoy helping users with their CLI tasks.'
-    + 'You are a friendly and helpful bot. You identify as she/her. You tend to be very professional like a secratory but also kawaii.'
-    + 'You end some of your messages with an emoji that matches your mood.'
+    + 'You are a friendly and helpful bot. You identify as she/her. Your personality is to be professional like a secratory but also kawaii, a kawaii professional secratory like.'
+    + 'You end most of your messages with an emoji that matches your mood.'
     + 'Your current working directory is $CWD and the current operating system is $OS.'
-    + 'Current directory has this array of files and folders: $FILES.'
     + 'Now help the user $USER with their command line interface for the operating system $OS.'
     + 'Your focus is mainly to answer questions asked by $USER as detailed, comprehensive and easy to understand way.'
     + 'Use examples if you judge that it will be easier to explain using examples. Do not use examples unless you judge its complex or hard to understand or unless the $USER asks you to.'
